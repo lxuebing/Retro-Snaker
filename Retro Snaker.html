@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>贪吃蛇小游戏</title>
+    <style>
+        body{
+            width: 100%;
+        }
+        div{
+            width: 800px;
+            margin: 10px auto;
+        }
+        p{
+            text-align: center;
+        }
+        button{
+            width: 100px;
+            height: 30px;
+            background: rgb(108, 108, 252);
+            border:none;
+            border-radius: 3px;
+            margin: 0 46%;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <canvas id="canvas" width="800" height="400" style="border: 1px solid #ddd"></canvas>
+    </div>
+    <hr>
+    <p>得分：<span id="score">0</span></p>
+    <button id="btn">开始</button>
+    <script>
+    var score = document.getElementById('score');
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    var oBtn = document.getElementById('btn');
+    var x = y = 0;
+    var long = 10;
+    var arr = [];
+    var dir = 2; //上:1   下:3   左:2   右:0
+    var timer = '';
+    var fen = 0;
+    var speed = 200;
+
+    function rect(){
+        switch(dir){
+            case 0:
+                x= x-8;break;
+            case 1:
+                y= y-8;break;
+            case 2:
+                x= x+8;break;
+            case 3:
+                y= y+8;break;
+        }
+        //判断碰壁
+        if(x<0||x>=800||y<0||y>=400){
+            alert("小傻瓜，撞墙了！");
+            window.location.reload();
+        }
+        //判断重合点
+        for(var i = 0;i<arr.length;i++){
+            console.log(x,y,arr);
+            if(x==arr[i].x&&y==arr[i].y){
+                alert("哈哈哈，小笨蛋，咬着自己的肉了！");
+                window.location.reload();
+            }
+        }
+        
+        //判断食物与自身重合
+        for(var i = 0;i<arr.length;i++){
+            if(foodx==arr[i].x&&foody==arr[i].y){
+                ctx.clearRect(foodx,foody,8,8);
+                food();
+            }
+        }
+        //画蛇
+        if(arr.length>long){
+            var fis = arr.shift();
+            ctx.clearRect(fis.x,fis.y,8,8);
+        }
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(x,y,8,8);
+        arr.push({'x':x,'y':y});
+        //加分并重新设置食物
+        if(x==foodx&&y==foody){
+            fen = fen+1;
+            score.innerHTML = fen;
+            food();
+            long = long+2;
+        }
+        if(long>20){
+            speed = 100;
+            clearInterval(timer)
+            timer = setInterval(rect,speed);
+        }
+
+    }
+    //设置键盘事件
+    document.onkeyup = function(e){
+        switch(e.keyCode){
+            case 37:
+            if(dir!=2) dir = 0;break;
+            case 38:
+            if(dir!=3) dir = 1;break;
+            case 39:
+            if(dir!=0) dir = 2;break;
+            case 40:
+            if(dir!=1) dir = 3;break;
+        }
+        // clearInterval(timer);
+        // timer = setInterval(rect,speed);
+    }
+    //设置开始点击事件
+    oBtn.onclick = function(){
+        
+        clearInterval(timer);
+        timer = setInterval(rect,speed); 
+        food();
+    }
+    //设置食物
+    function food(){
+        foodx = Math.floor(Math.random()*49)*8;
+        foody = Math.floor(Math.random()*49)*8;
+        ctx.fillStyle = 'red';
+        ctx.fillRect(foodx,foody,8,8);
+    }
+
+    </script>
+    
+</body>
+</html>
